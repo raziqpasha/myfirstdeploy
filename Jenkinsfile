@@ -21,8 +21,7 @@ pipeline {
                     cd /home/ec2-user/selenium-framework
                     docker-compose down || true
                     docker-compose up -d
-                    echo "Waiting for Selenium Grid to be ready..."
-                    sleep 15
+                    echo "Selenium Grid started"
                 '''
 			}
 		}
