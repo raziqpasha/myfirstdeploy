@@ -20,6 +20,15 @@ public class DriverManager {
         try {
             ChromeOptions options = new ChromeOptions();
 
+            // Add arguments for running Chrome in Docker/headless environments
+            options.addArguments("--headless=new");
+            options.addArguments("--no-sandbox");
+            options.addArguments("--disable-dev-shm-usage");
+            options.addArguments("--disable-gpu");
+            options.addArguments("--window-size=1920,1080");
+            options.addArguments("--disable-blink-features=AutomationControlled");
+            options.addArguments("--remote-allow-origins=*");
+
             // Create RemoteWebDriver pointing to Selenium Grid
             WebDriver remoteDriver = new RemoteWebDriver(new URL(hubUrl), options);
             driver.set(remoteDriver);
