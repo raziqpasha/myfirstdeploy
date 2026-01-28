@@ -2,15 +2,15 @@ pipeline {
 	agent any
 
 	environment {
-		// Set Selenium Hub URL
 		SELENIUM_HUB_URL = 'http://selenium-hub:4444/wd/hub'
 	}
 
 	stages {
 		stage('Checkout') {
 			steps {
-				echo 'Pulling code from GitHub...'
-				checkout scm
+				echo 'Using local code...'
+				sh 'pwd'
+				sh 'ls -la'
 			}
 		}
 
@@ -18,10 +18,11 @@ pipeline {
 			steps {
 				echo 'Starting Selenium Grid...'
 				sh '''
+                    cd /home/ec2-user/selenium-framework
                     docker-compose down || true
                     docker-compose up -d
                     echo "Waiting for Selenium Grid to be ready..."
-                    sleep 10
+                    sleep 15
                 '''
 			}
 		}
@@ -29,7 +30,10 @@ pipeline {
 		stage('Build Docker Image') {
 			steps {
 				echo 'Building test Docker image...'
-				sh 'docker build -t selenium-tests .'
+				sh '''
+                    cd /home/ec2-user/selenium-framework
+                    docker build -t selenium-tests .
+                '''
 			}
 		}
 
@@ -37,6 +41,7 @@ pipeline {
 			steps {
 				echo 'Running Selenium tests...'
 				sh '''
+                    cd /home/ec2-user/selenium-framework
                     docker run --rm \
                         --network selenium-framework_selenium-grid \
                         -e SELENIUM_HUB_URL=${SELENIUM_HUB_URL} \
@@ -49,7 +54,10 @@ pipeline {
 	post {
 		always {
 			echo 'Stopping Selenium Grid...'
-			sh 'docker-compose down || true'
+			sh '''
+                cd /home/ec2-user/selenium-framework
+                docker-compose down || true
+            '''
 		}
 
 		success {
