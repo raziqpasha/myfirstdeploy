@@ -1,5 +1,8 @@
 package org.deploymentproject.tests;
 
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import java.time.Duration;
 
 import org.deploymentproject.base.BaseTest;
 import org.deploymentproject.driver.DriverManager;
@@ -27,23 +30,24 @@ public class GoogleSearchTest extends BaseTest {
     }
 
     @Test
-    public void testGoogleSearch() throws InterruptedException {
-        // Create page object
+    public void testGoogleSearch() {
         GoogleHomePage googlePage = new GoogleHomePage(DriverManager.getDriver());
 
+        String searchTerm = "Selenium WebDriver";
+
         // Perform search
-        googlePage.searchFor("Selenium WebDriver");
+        googlePage.searchFor(searchTerm);
 
-        // Wait for results to load
-        Thread.sleep(2000);
-
-        // Get new page title
-        String title = googlePage.getPageTitle();
+        // ✅ WAIT for title to update
+        WebDriverWait wait = new WebDriverWait(DriverManager.getDriver(), Duration.ofSeconds(10));
+        wait.until(ExpectedConditions.titleContains(searchTerm));
 
         // Verify search happened
-        Assert.assertTrue(title.contains("Selenium WebDriver"),
+        String title = DriverManager.getDriver().getTitle();
+        Assert.assertTrue(title.contains(searchTerm),
                 "Page title should contain search term");
 
         System.out.println("Test Passed: Search executed successfully");
     }
+
 }
